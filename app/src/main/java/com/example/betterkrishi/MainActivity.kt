@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
+import com.example.betterkrishi.screens.WelcomeScreen
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -22,11 +23,11 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-
-            ImagePickerScreen(onImagePicked = { bitmap ->
-                // Process the image and run inference
-                processImage(bitmap)
-            }, this)
+        WelcomeScreen()
+//            ImagePickerScreen(onImagePicked = { bitmap ->
+//                // Process the image and run inference
+//                processImage(bitmap)
+//            }, this)
         }
     }
 

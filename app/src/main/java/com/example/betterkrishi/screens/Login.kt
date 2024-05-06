@@ -1,25 +1,85 @@
-//package com.example.betterkrishi.screens
-//
-//// Import necessary libraries
-//import android.content.Context
-//import androidx.compose.foundation.layout.*
-//import androidx.compose.material.*
-//import androidx.compose.material3.Button
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.material3.OutlinedTextField
-//import androidx.compose.material3.Text
-//import androidx.compose.runtime.*
-//import androidx.compose.runtime.saveable.*
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.platform.LocalContext
-//import androidx.compose.ui.res.stringResource
-//import androidx.compose.ui.text.input.KeyboardType
-//import androidx.compose.ui.text.style.TextAlign
-//import androidx.compose.ui.tooling.preview.Preview
-//import androidx.compose.ui.unit.dp
-//import com.example.betterkrishi.R
-//
+package com.example.betterkrishi.screens
+
+// Import necessary libraries
+import android.content.Context
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.betterkrishi.R
+import com.example.betterkrishi.ui.theme.BetterGreen
+
+@Composable
+fun WelcomeScreen(modifier: Modifier = Modifier) {
+    val state = remember {
+        mutableStateOf("")
+    }
+    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+        Text(
+            text = "Welcome,",
+            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp),
+            modifier = Modifier.padding(start = 16.dp, top = 36.dp)
+        )
+        Text(
+            text = "Log In",
+            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 32.sp, color = BetterGreen),
+            modifier = Modifier.padding(start = 16.dp)
+        )
+        Text(
+            text = "to continue",
+            style = TextStyle(fontSize = 26.sp),
+            modifier = Modifier.padding(start = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = state.value,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            onValueChange = { state.value = it },
+            label = { Text("Enter your phone no.") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { /*TODO: Handle login button click */ },
+            Modifier.padding(start = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = BetterGreen,
+                contentColor = Color.White
+            )
+        ) {
+            Text(text = "Login")
+
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, heightDp = 400, widthDp = 300)
+@Composable
+fun Previewer() {
+    WelcomeScreen()
+}
+
 //@Composable
 //fun PhoneNumberLoginScreen(
 //    viewModel: PhoneNumberLoginViewModel,
@@ -30,7 +90,9 @@
 //    val isLoginEnabled = remember { phoneNumber.value.isNotEmpty() }
 //
 //    Column(
-//        modifier = Modifier.fillMaxSize().padding(16.dp),
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp),
 //        horizontalAlignment = Alignment.CenterHorizontally
 //    ) {
 //        Text(
@@ -41,13 +103,13 @@
 //
 //        Spacer(modifier = Modifier.height(16.dp))
 //
-//        OutlinedTextField(
-//            value = phoneNumber.value,
-//            onValueChange = { phoneNumber.value = it },
-//            label = { Text(stringResource(id = R.string.phone_number)) },
-//            keyboardType = KeyboardType.Number,
-//            modifier = Modifier.fillMaxWidth()
-//        )
+////        OutlinedTextField(
+////            value = phoneNumber.value,
+////            onValueChange = { phoneNumber.value = phoneNumber },
+////            label = { Text(text = "Hello") },
+////            keyboardType = KeyboardType.Number,
+////            modifier = Modifier.fillMaxWidth()
+////        )
 //
 //        Spacer(modifier = Modifier.height(16.dp))
 //
@@ -61,29 +123,23 @@
 //            modifier = Modifier.fillMaxWidth()
 //        ) {
 //            Text(
-//                text = stringResource(id = R.string.login),
-//                style = MaterialTheme.typography.button
+//                text = stringResource(R.string.phone_number_login),
+//                style = MaterialTheme.typography.bodyMedium
 //            )
 //        }
 //
-//        if (viewModel.errorMessage.isNotEmpty()) {
-//            Spacer(modifier = Modifier.height(16.dp))
-//            Text(
-//                text = viewModel.errorMessage,
-//                color = MaterialTheme.colors.error,
-//                style = MaterialTheme.typography.caption
-//            )
-//        }
+////        if (viewModel.errorMessage.()) {
+////            Spacer(modifier = Modifier.height(16.dp))
+////            Text(
+////                text = viewModel.errorMessage,
+////                color = MaterialTheme.colorScheme.error,
+////                style = MaterialTheme.typography.labelMedium
+////            )
+////        }
 //    }
 //}
 //
-//@Preview(showBackground = true)
-//@Composable
-//fun PhoneNumberLoginScreenPreview() {
-//    PhoneNumberLoginScreen(
-//        viewModel = PhoneNumberLoginViewModel(),
-//        onLoginSuccess = {}
-//    )
+
 //}
 //
 //// Define your PhoneNumberLoginViewModel with logic for phone number validation,

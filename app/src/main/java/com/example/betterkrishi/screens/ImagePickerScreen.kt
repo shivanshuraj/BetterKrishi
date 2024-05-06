@@ -33,16 +33,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.betterkrishi.R
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 
 private const val TAG = "ImagePickerScreen"
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
     var result by remember { mutableStateOf("...") }
     // Permission launcher
 
-//    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -102,15 +105,13 @@ fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
             }
 
             // Check permission before opening camera
-            if (cameraPermissionState.hasPermission) {
+
                 ClickableImage(
                     imagePainter = painterResource(id = R.drawable.ic_cam),
                     contentDescription = "Launch camera",
                     onClick = { cameraLauncher.launch(null) }
                 )
-            } else {
-                Text("Camera permission is required to continue.")
-            }
+
 
             Text(
                 text = result, modifier = Modifier.padding(16.dp), // Add padding around the text
