@@ -6,9 +6,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
-import com.example.betterkrishi.screens.WelcomeScreen
+import com.example.betterkrishi.screens.LoginScreen
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -17,20 +21,35 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 
 class MainActivity : ComponentActivity() {
     lateinit var labels: List<String>
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
-        labels=application.assets.open("labels.txt").bufferedReader().readLines()
+        labels = application.assets.open("labels.txt").bufferedReader().readLines()
 
         super.onCreate(savedInstanceState)
         setContent {
-            navigator()
+            Navigator()
         }
-//        WelcomeScreen()
-////            ImagePickerScreen(onImagePicked = { bitmap ->
-////                // Process the image and run inference
-////                processImage(bitmap)
-////            }, this)
-//        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun Navigator() {
+        val navController = rememberNavController()
+        val navHost = NavHost(navController = navController, startDestination = "login") {
+            composable(route = "home") {
+                ImagePickerScreen(onImagePicked = { bitmap ->
+                    processImage(bitmap)
+                }, applicationContext)
+            }
+            composable(route = "sign up") {
+            }
+            composable(route = "login") {
+                LoginScreen(navController = navController)
+            }
+        }
+
     }
 
     companion object {

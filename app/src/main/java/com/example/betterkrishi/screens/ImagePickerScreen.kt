@@ -80,12 +80,6 @@ fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Namaskar!!",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-
         Image(
             painter = painterResource(id = R.drawable.ic_image),
             contentDescription = null,
@@ -98,11 +92,11 @@ fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
 
         Row {
             // Camera button
-            Button(onClick = {
-                cameraPermissionState.launchPermissionRequest()
-            }) {
-                Text("Request Camera Permission")
-            }
+//            Button(onClick = {
+//                cameraPermissionState.launchPermissionRequest()
+//            }) {
+//                Text("Request Camera Permission")
+//            }
 
             // Check permission before opening camera
 

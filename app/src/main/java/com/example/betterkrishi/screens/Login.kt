@@ -1,35 +1,26 @@
 package com.example.betterkrishi.screens
 
 // Import necessary libraries
-import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.betterkrishi.R
+import androidx.navigation.NavController
 import com.example.betterkrishi.ui.theme.BetterGreen
 
 @Composable
-fun WelcomeScreen(modifier: Modifier = Modifier) {
+fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
     val state = remember {
         mutableStateOf("")
     }
@@ -61,7 +52,7 @@ fun WelcomeScreen(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /*TODO: Handle login button click */ },
+            onClick = { navController.navigate("home") },
             Modifier.padding(start = 16.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = BetterGreen,
@@ -74,11 +65,11 @@ fun WelcomeScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true, heightDp = 400, widthDp = 300)
-@Composable
-fun Previewer() {
-    WelcomeScreen()
-}
+//@Preview(showBackground = true, showSystemUi = true, heightDp = 400, widthDp = 300)
+//@Composable
+//fun Previewer() {
+//    LoginScreen()
+//}
 
 //@Composable
 //fun PhoneNumberLoginScreen(
