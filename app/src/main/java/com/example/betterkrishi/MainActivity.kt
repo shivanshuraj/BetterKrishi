@@ -23,12 +23,14 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-        WelcomeScreen()
-//            ImagePickerScreen(onImagePicked = { bitmap ->
-//                // Process the image and run inference
-//                processImage(bitmap)
-//            }, this)
+            navigator()
         }
+//        WelcomeScreen()
+////            ImagePickerScreen(onImagePicked = { bitmap ->
+////                // Process the image and run inference
+////                processImage(bitmap)
+////            }, this)
+//        }
     }
 
     companion object {
