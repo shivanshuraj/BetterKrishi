@@ -7,9 +7,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
 import com.example.betterkrishi.screens.LoginScreen
@@ -40,16 +42,20 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         val navHost = NavHost(navController = navController, startDestination = "login") {
             composable(route = "home") {
-                ImagePickerScreen(onImagePicked = { bitmap ->
+                ImagePickerScreen(applicationContext, navController) { bitmap ->
                     processImage(bitmap)
-                }, applicationContext)
+                }
             }
             composable(route = "sign up") {
             }
             composable(route = "login") {
                 LoginScreen(navController = navController)
             }
-            composable (route = "prediction") {
+            composable(route = "prediction/{disease}", arguments = listOf(
+                navArgument(name = "disease") {
+                    type = NavType.StringType
+                }
+            )) {
                 PredictionScreen()
             }
         }

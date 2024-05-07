@@ -2,7 +2,6 @@ package com.example.betterkrishi.screens
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.ColorFilter
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -17,7 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,8 +32,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.betterkrishi.R
-import com.example.betterkrishi.ui.theme.BetterGreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 
@@ -43,11 +42,9 @@ private const val TAG = "ImagePickerScreen"
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
+fun ImagePickerScreen(context: Context, navController: NavController, onImagePicked: (Bitmap) -> String) {
     var result by remember { mutableStateOf("...") }
-    val image = remember {
-        mutableStateOf(Int)
-    }
+
     // Permission launcher
 
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
@@ -88,7 +85,9 @@ fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
         Image(
             painter = painterResource(id = R.drawable.ic_image),
             contentDescription = null,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .size(100.dp)
         )
         Text(
             text = "Capture an image or select one from gallery",
@@ -111,8 +110,8 @@ fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
             ClickableImage(
                 imagePainter = painterResource(id = R.drawable.ic_gallery),
                 contentDescription = "Pick image from gallery",
-                modifier =Modifier.padding(top = 30.dp, start = 16.dp),
-                onClick = { galleryLauncher.launch(null) }
+                modifr = Modifier.padding(top = 30.dp, start = 16.dp),
+                onClick = { galleryLauncher.launch("image/*") }
             )
         }
 
@@ -132,11 +131,11 @@ fun ClickableImage(
     imagePainter: Painter,
     contentDescription: String?,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier.clickable(onClick = onClick)
+    modifr: Modifier = Modifier
 ) {
     Image(
         painter = imagePainter,
         contentDescription = contentDescription,
-        modifier = modifier
+        modifier = modifr.clickable(onClick = onClick)
     )
 }
