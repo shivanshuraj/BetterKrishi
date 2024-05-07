@@ -2,6 +2,7 @@ package com.example.betterkrishi.screens
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.ColorFilter
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.betterkrishi.R
+import com.example.betterkrishi.ui.theme.BetterGreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 
@@ -43,6 +45,9 @@ private const val TAG = "ImagePickerScreen"
 @Composable
 fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
     var result by remember { mutableStateOf("...") }
+    val image = remember {
+        mutableStateOf(Int)
+    }
     // Permission launcher
 
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
@@ -90,28 +95,25 @@ fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
             style = MaterialTheme.typography.bodyMedium,
         )
 
+
+        Text(
+            text = result, modifier = Modifier.padding(16.dp),
+            fontSize = 20.sp, // Set font size
+            fontWeight = FontWeight.Bold,
+        )
+
         Row {
-            // Camera button
-//            Button(onClick = {
-//                cameraPermissionState.launchPermissionRequest()
-//            }) {
-//                Text("Request Camera Permission")
-//            }
-
-            // Check permission before opening camera
-
-                ClickableImage(
-                    imagePainter = painterResource(id = R.drawable.ic_cam),
-                    contentDescription = "Launch camera",
-                    onClick = { cameraLauncher.launch(null) }
-                )
-
-
-            Text(
-                text = result, modifier = Modifier.padding(16.dp), // Add padding around the text
-                fontSize = 20.sp, // Set font size
-                fontWeight = FontWeight.Bold
-            )// Set font weight)
+            ClickableImage(
+                imagePainter = painterResource(id = R.drawable.ic_cam),
+                contentDescription = "Launch camera",
+                onClick = { cameraLauncher.launch(null) }
+            )
+            ClickableImage(
+                imagePainter = painterResource(id = R.drawable.ic_gallery),
+                contentDescription = "Pick image from gallery",
+                modifier =Modifier.padding(top = 30.dp, start = 16.dp),
+                onClick = { galleryLauncher.launch(null) }
+            )
         }
 
 
@@ -129,11 +131,12 @@ fun ImagePickerScreen(onImagePicked: (Bitmap) -> String, context: Context) {
 fun ClickableImage(
     imagePainter: Painter,
     contentDescription: String?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier.clickable(onClick = onClick)
 ) {
     Image(
         painter = imagePainter,
         contentDescription = contentDescription,
-        modifier = Modifier.clickable(onClick = onClick)
+        modifier = modifier
     )
 }

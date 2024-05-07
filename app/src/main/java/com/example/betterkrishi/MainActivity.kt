@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
 import com.example.betterkrishi.screens.LoginScreen
+import com.example.betterkrishi.screens.PredictionScreen
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -47,6 +48,9 @@ class MainActivity : ComponentActivity() {
             }
             composable(route = "login") {
                 LoginScreen(navController = navController)
+            }
+            composable (route = "prediction") {
+                PredictionScreen()
             }
         }
 

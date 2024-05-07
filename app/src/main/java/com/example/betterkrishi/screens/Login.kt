@@ -44,7 +44,11 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
         OutlinedTextField(
             value = state.value,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            onValueChange = { state.value = it },
+            onValueChange = {
+                if (it.length<=10){
+                    state.value = it
+                }
+                 },
             label = { Text("Enter your phone no.") },
             modifier = Modifier
                 .fillMaxWidth()
