@@ -51,9 +51,19 @@ android {
 }
 
 dependencies {
-    implementation ("com.google.android.exoplayer:exoplayer-core:2.19.1")
-    implementation ("com.google.android.exoplayer:exoplayer-ui:2.19.1")
-    implementation ("androidx.navigation:navigation-compose:2.7.7")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Gson Converter for Retrofit
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // Lifecycle components
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
+
+    // Make sure to include this for LiveData integration
+    implementation("androidx.compose.runtime:runtime-livedata:1.2.1")
+    implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.9.0")
@@ -61,7 +71,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation ("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
+    implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
     implementation("androidx.compose.material3:material3")
     implementation("org.tensorflow:tensorflow-lite-support:0.1.0")
     implementation("org.tensorflow:tensorflow-lite-metadata:0.1.0")

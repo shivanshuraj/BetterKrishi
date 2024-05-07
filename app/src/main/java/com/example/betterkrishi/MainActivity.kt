@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
 import com.example.betterkrishi.screens.LoginScreen
+import com.example.betterkrishi.screens.OTPScreen
 import com.example.betterkrishi.screens.PredictionScreen
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -50,6 +51,18 @@ class MainActivity : ComponentActivity() {
             }
             composable(route = "login") {
                 LoginScreen(navController = navController)
+            }
+            composable(route = "otp") {
+                OTPScreen(navController)
+            }
+            composable(route="market"){
+
+            }
+            composable(route="news"){
+
+            }
+            composable(route="plant care tips"){
+
             }
             composable(route = "prediction/{disease}", arguments = listOf(
                 navArgument(name = "disease") {

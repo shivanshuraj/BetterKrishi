@@ -96,7 +96,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
                 Button(
                     onClick = {
                         if (state.value.length == 10)
-                            navController.navigate("home")
+                            navController.navigate("otp")
                     },
                     Modifier.padding(start = 16.dp),
                     colors = ButtonDefaults.buttonColors(
