@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
 import com.example.betterkrishi.screens.LoginScreen
+import com.example.betterkrishi.screens.MarketScreen
 import com.example.betterkrishi.screens.OTPScreen
 import com.example.betterkrishi.screens.PredictionScreen
 import org.tensorflow.lite.DataType
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun Navigator() {
         val navController = rememberNavController()
-        val navHost = NavHost(navController = navController, startDestination = "login") {
+        val navHost = NavHost(navController = navController, startDestination = "market") {
             composable(route = "home") {
                 ImagePickerScreen(applicationContext, navController) { bitmap ->
                     processImage(bitmap)
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 OTPScreen(navController)
             }
             composable(route="market"){
-
+                MarketScreen()
             }
             composable(route="news"){
 
