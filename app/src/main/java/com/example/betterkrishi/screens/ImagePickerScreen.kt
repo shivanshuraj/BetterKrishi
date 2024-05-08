@@ -139,3 +139,31 @@ fun ClickableImage(
         modifier = modifr.clickable(onClick = onClick)
     )
 }
+//@Composable
+//fun SimpleDropdownMenu() {
+//    var expanded by remember { mutableStateOf(false) }
+//    var selectedOption by remember { mutableStateOf("Option 1") }
+//
+//    Box(modifier = Modifier.padding(20.dp)) {
+//        Button(onClick = { expanded = true }) {
+//            Text("Selected: $selectedOption")
+//        }
+//
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { expanded = false }
+//        ) {
+//            val options = listOf("Rice", "Tomato", "Apple")
+//            for (option in options) {
+//                DropdownMenuItem(
+//                    onClick = {
+//                        selectedOption = option
+//                        expanded = false
+//                    }
+//                ) {
+//                    Text(option)
+//                }
+//            }
+//        }
+//    }
+//}
