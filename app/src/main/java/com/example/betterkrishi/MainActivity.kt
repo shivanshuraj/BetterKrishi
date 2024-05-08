@@ -18,6 +18,8 @@ import com.example.betterkrishi.screens.LoginScreen
 import com.example.betterkrishi.screens.MarketScreen
 import com.example.betterkrishi.screens.OTPScreen
 import com.example.betterkrishi.screens.PredictionScreen
+import com.example.betterkrishi.screens.ProductDetails
+import com.example.betterkrishi.screens.sampleProducts
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -57,7 +59,7 @@ class MainActivity : ComponentActivity() {
                 OTPScreen(navController)
             }
             composable(route="market"){
-                MarketScreen()
+                MarketScreen(navController)
             }
             composable(route="news"){
 
@@ -72,7 +74,13 @@ class MainActivity : ComponentActivity() {
             )) {
                 PredictionScreen()
             }
-        }
+            composable("productDetails/{productId}",
+                arguments = listOf(navArgument("productId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val productId = backStackEntry.arguments?.getInt("productId")
+                val product = sampleProducts.find { it.id == productId }!!
+                ProductDetails(product = product)
+            }        }
 
     }
 
