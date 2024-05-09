@@ -6,7 +6,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +35,7 @@ import com.example.betterkrishi.screens.OTPScreen
 import com.example.betterkrishi.screens.PredictionScreen
 import com.example.betterkrishi.screens.ProductDetails
 import com.example.betterkrishi.screens.sampleProducts
+import kotlinx.coroutines.delay
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -35,16 +51,52 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            Navigator()
+            MyApp()
         }
 
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun Navigator() {
+    fun MyApp() {
+        Surface() {
+            SplashScreen()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun SplashScreen(navigateToMainScreen: () -> Unit = {}) {
+        var isSplashScreenVisible by remember { mutableStateOf(true) }
+
+        LaunchedEffect(key1 = true) {
+            delay(3000)  // Delay for the splash screen
+            isSplashScreenVisible = false
+        }
+
+        if (isSplashScreenVisible) {
+            // Display the splash screen
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Image(painter = painterResource(id = R.mipmap.ic_launcher), contentDescription = "Logo", Modifier.size(100.dp))
+            }
+        } else {
+            // Navigate to main screen or main app content
+            AppNavigator()
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Preview(showBackground = true)
+    @Composable
+    fun DefaultPreview() {
+        MyApp()
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun AppNavigator() {
         val navController = rememberNavController()
-        val navHost = NavHost(navController = navController, startDestination = "market") {
+        val navHost = NavHost(navController = navController, startDestination = "login") {
             composable(route = "home") {
                 ImagePickerScreen(applicationContext, navController) { bitmap ->
                     processImage(bitmap)
@@ -58,13 +110,13 @@ class MainActivity : ComponentActivity() {
             composable(route = "otp") {
                 OTPScreen(navController)
             }
-            composable(route="market"){
+            composable("market") {
                 MarketScreen(navController)
             }
-            composable(route="news"){
+            composable("news") {
 
             }
-            composable(route="plant care tips"){
+            composable(route = "plant care tips") {
 
             }
             composable(route = "prediction/{disease}", arguments = listOf(
@@ -74,13 +126,15 @@ class MainActivity : ComponentActivity() {
             )) {
                 PredictionScreen()
             }
-            composable("productDetails/{productId}",
+            composable(
+                "productDetails/{productId}",
                 arguments = listOf(navArgument("productId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val productId = backStackEntry.arguments?.getInt("productId")
                 val product = sampleProducts.find { it.id == productId }!!
                 ProductDetails(product = product)
-            }        }
+            }
+        }
 
     }
 
@@ -130,4 +184,54 @@ class MainActivity : ComponentActivity() {
             bitmap
         }
 
+
+    sealed class Screen(val route: String) {
+        object Home : Screen("home")
+        object Market : Screen("market")
+        object News : Screen("news")
+    }
 }
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    @Composable
+//    fun MainScreen() {
+//        val navController = rememberNavController()
+//        Scaffold(
+//            bottomBar = { BottomNavigationBar(navController) }
+//        ) {
+//            AppNavigator()
+//            val res=it
+//        }
+//    }
+
+//    @Composable
+//    fun BottomNavigationBar(navController: NavHostController) {
+//        val items = listOf(
+//            Screen.Home,
+//            Screen.Dashboard,
+//            Screen.Notifications
+//        )
+//        BottomNavigation {
+//            val currentRoute = currentRoute(navController)
+//            items.forEach { screen ->
+//                BottomNavigationItem(
+//                    icon = { Icon(Icons.Filled.Home, contentDescription = null) },
+//                    label = { Text(screen.route.capitalize(Locale.current)) },
+//                    selected = currentRoute == screen.route,
+//                    onClick = {
+//                        navController.navigate(screen.route) {
+//                            popUpTo(navController.graph.startDestinationId)
+//                            launchSingleTop = true
+//                        }
+//                    }
+//                )
+//            }
+//        }
+//    }
+//
+//    fun currentRoute(navController: NavHostController): String? {
+//        return navController.currentBackStackEntry?.destination?.route
+//    }
+//
+//}
+
