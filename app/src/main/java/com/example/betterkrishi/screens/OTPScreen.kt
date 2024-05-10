@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -36,7 +35,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.betterkrishi.ui.theme.BetterGreen
 
 @Composable
 fun OTPInputFields() {
@@ -93,8 +91,7 @@ fun OTPInputFields() {
 
 @Composable
 fun SubmitOTPButton(onSubmit: () -> Unit) {
-    Button(onClick = { onSubmit() }, colors = ButtonDefaults.buttonColors(containerColor =
-    BetterGreen)) {
+    Button(onClick = { onSubmit() }) {
         Text("Verify OTP", )
     }
 }

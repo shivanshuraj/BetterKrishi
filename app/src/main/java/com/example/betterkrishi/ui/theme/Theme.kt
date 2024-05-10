@@ -17,15 +17,15 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BetterGreen,
-    secondary = Green300,
+    primary = Green300,
+    secondary = BetterGreen,
     tertiary = Green400,
     background = Color.Black
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = BetterGreen,
-    secondary = Green300,
+    primary = Green300,
+    secondary = BetterGreen,
     tertiary = Green400,
 
     /* Other default colors to override

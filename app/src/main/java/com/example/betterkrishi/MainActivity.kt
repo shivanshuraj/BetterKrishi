@@ -41,6 +41,7 @@ import com.example.betterkrishi.screens.OTPScreen
 import com.example.betterkrishi.screens.PredictionScreen
 import com.example.betterkrishi.screens.ProductDetails
 import com.example.betterkrishi.screens.sampleProducts
+import com.example.betterkrishi.ui.theme.BetterKrishiTheme
 import kotlinx.coroutines.delay
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -57,7 +58,10 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            MyApp()
+            BetterKrishiTheme {
+                MyApp()
+            }
+
         }
 
     }

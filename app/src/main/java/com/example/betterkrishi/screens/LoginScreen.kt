@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
-import com.example.betterkrishi.ui.theme.BetterGreen
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
@@ -100,7 +99,6 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
                     },
                     Modifier.padding(start = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BetterGreen,
                         contentColor = Color.White
                     )
                 ) {
