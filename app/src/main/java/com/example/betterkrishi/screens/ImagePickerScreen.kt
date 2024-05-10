@@ -43,6 +43,7 @@ private const val TAG = "ImagePickerScreen"
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ImagePickerScreen(context: Context, navController: NavController, onImagePicked: (Bitmap) -> String) {
+
     var result by remember { mutableStateOf("...") }
 
     // Permission launcher

@@ -58,7 +58,7 @@ dependencies {
     // Lifecycle components
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-
+    implementation("androidx.compose.material:material:1.6.7")
     // Make sure to include this for LiveData integration
     implementation ("androidx.compose.runtime:runtime-livedata:1.6.7")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
@@ -68,7 +68,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation(platform("androidx.compose:compose-bom:2024.05.00"))
-    implementation("androidx.activity:activity-compose:1.9.0")
     // Accompanist for additional features like loading images
     implementation("com.google.accompanist:accompanist-coil:0.15.0")
     implementation("androidx.compose.ui:ui")

@@ -10,7 +10,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,9 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.betterkrishi.ml.RiceDisease
@@ -77,7 +83,11 @@ class MainActivity : ComponentActivity() {
         if (isSplashScreenVisible) {
             // Display the splash screen
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Image(painter = painterResource(id = R.mipmap.ic_launcher), contentDescription = "Logo", Modifier.size(100.dp))
+                Image(
+                    painter = painterResource(id = R.mipmap.ic_launcher),
+                    contentDescription = "Logo",
+                    Modifier.size(100.dp)
+                )
             }
         } else {
             // Navigate to main screen or main app content
@@ -92,6 +102,7 @@ class MainActivity : ComponentActivity() {
     fun DefaultPreview() {
         MyApp()
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun AppNavigator() {
@@ -183,55 +194,54 @@ class MainActivity : ComponentActivity() {
         } else {
             bitmap
         }
+}
 
+enum class Screen(val route: String, val icon: Int, val title: String) {
+    Home("home", R.drawable.ic_home, "Home"),
+    Market("market", R.drawable.ic_market, "Market"),
+    News("news", R.drawable.ic_news, "News")
+}
 
-    sealed class Screen(val route: String) {
-        object Home : Screen("home")
-        object Market : Screen("market")
-        object News : Screen("news")
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    val items = listOf(Screen.Home, Screen.Market, Screen.News)
+    BottomNavigation {
+        val currentRoute = currentRoute(navController)
+        items.forEach { screen ->
+            BottomNavigationItem(
+                icon = { Icon(painterResource(id = screen.icon), contentDescription = null) },
+                label = { Text(screen.title) },
+                selected = currentRoute == screen.route,
+                onClick = {
+                    navController.navigate(screen.route) {
+                        navController.graph.startDestinationRoute?.let { route ->
+                            popUpTo(route) { saveState = true }
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
     }
 }
 
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    @Composable
-//    fun MainScreen() {
-//        val navController = rememberNavController()
-//        Scaffold(
-//            bottomBar = { BottomNavigationBar(navController) }
-//        ) {
-//            AppNavigator()
-//            val res=it
-//        }
-//    }
+@Composable
+fun currentRoute(navController: NavController): String? {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    return navBackStackEntry?.destination?.route
+}
 
-//    @Composable
-//    fun BottomNavigationBar(navController: NavHostController) {
-//        val items = listOf(
-//            Screen.Home,
-//            Screen.Dashboard,
-//            Screen.Notifications
-//        )
-//        BottomNavigation {
-//            val currentRoute = currentRoute(navController)
-//            items.forEach { screen ->
-//                BottomNavigationItem(
-//                    icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-//                    label = { Text(screen.route.capitalize(Locale.current)) },
-//                    selected = currentRoute == screen.route,
-//                    onClick = {
-//                        navController.navigate(screen.route) {
-//                            popUpTo(navController.graph.startDestinationId)
-//                            launchSingleTop = true
-//                        }
-//                    }
-//                )
-//            }
+//@Composable
+//fun MainScreen() {
+//    val navController = rememberNavController()
+//    Scaffold(
+//        bottomBar = { BottomNavigationBar(navController) }
+//    ) {
+//        NavHost(navController, startDestination = Screen.Home.route) {
+//            composable(Screen.Home.route) { ImagePickerScreen() }
+//            composable(Screen.Market.route) { MarketScreen() }
+//            composable(Screen.News.route) { () }
 //        }
 //    }
-//
-//    fun currentRoute(navController: NavHostController): String? {
-//        return navController.currentBackStackEntry?.destination?.route
-//    }
-//
 //}
-
