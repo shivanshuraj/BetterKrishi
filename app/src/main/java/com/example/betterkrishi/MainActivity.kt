@@ -10,11 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -69,9 +64,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun MyApp() {
-        Surface() {
-            SplashScreen()
-        }
+        AppNavigator()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -95,7 +88,7 @@ class MainActivity : ComponentActivity() {
             }
         } else {
             // Navigate to main screen or main app content
-            AppNavigator()
+
         }
     }
 
@@ -209,25 +202,25 @@ enum class Screen(val route: String, val icon: Int, val title: String) {
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(Screen.Home, Screen.Market, Screen.News)
-    BottomNavigation {
-        val currentRoute = currentRoute(navController)
-        items.forEach { screen ->
-            BottomNavigationItem(
-                icon = { Icon(painterResource(id = screen.icon), contentDescription = null) },
-                label = { Text(screen.title) },
-                selected = currentRoute == screen.route,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route) { saveState = true }
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-            )
-        }
-    }
+//    BottomNavigation {
+//        val currentRoute = currentRoute(navController)
+//        items.forEach { screen ->
+//            BottomNavigationItem(
+//                icon = { Icon(painterResource(id = screen.icon), contentDescription = null) },
+//                label = { Text(screen.title) },
+//                selected = currentRoute == screen.route,
+//                onClick = {
+//                    navController.navigate(screen.route) {
+//                        navController.graph.startDestinationRoute?.let { route ->
+//                            popUpTo(route) { saveState = true }
+//                        }
+//                        launchSingleTop = true
+//                        restoreState = true
+//                    }
+//                }
+//            )
+//        }
+//    }
 }
 
 @Composable
