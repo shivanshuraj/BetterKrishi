@@ -84,11 +84,11 @@ fun ImagePickerScreen(context: Context, navController: NavController, onImagePic
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_image),
+            painter = painterResource(R.drawable.ic_image),
             contentDescription = null,
             modifier = Modifier
                 .padding(bottom = 16.dp)
-                .size(100.dp)
+                .size(300.dp)
         )
         Text(
             text = "Capture an image or select one from gallery",
