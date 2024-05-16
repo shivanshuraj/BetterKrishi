@@ -1,5 +1,6 @@
 package com.example.betterkrishi.screens
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +34,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.betterkrishi.BottomNavigationBar
 import com.example.betterkrishi.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
@@ -40,10 +43,11 @@ import com.google.accompanist.permissions.rememberPermissionState
 private const val TAG = "ImagePickerScreen"
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ImagePickerScreen(context: Context, navController: NavController, onImagePicked: (Bitmap) -> String) {
-
+fun ImagePickerScreen(context: Context, onImagePicked: (Bitmap) -> String) {
+    val navController = rememberNavController()
     var result by remember { mutableStateOf("...") }
 
     // Permission launcher
@@ -77,56 +81,58 @@ fun ImagePickerScreen(context: Context, navController: NavController, onImagePic
                 Log.d(TAG, "ImagePickerScreen: $result")
             }
         }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(R.drawable.ic_image),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .size(300.dp)
-        )
-        Text(
-            text = "Capture an image or select one from gallery",
-            style = MaterialTheme.typography.bodyMedium,
-        )
+    Scaffold(bottomBar = { BottomNavigationBar(navController = navController) }) {
 
 
-        Text(
-            text = result, modifier = Modifier.padding(16.dp),
-            fontSize = 20.sp, // Set font size
-            fontWeight = FontWeight.Bold,
-        )
-
-        Row {
-            ClickableImage(
-                imagePainter = painterResource(id = R.drawable.ic_cam),
-                contentDescription = "Launch camera",
-                onClick = { cameraLauncher.launch(null) }
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_image),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .size(300.dp)
             )
-            ClickableImage(
-                imagePainter = painterResource(id = R.drawable.ic_gallery),
-                contentDescription = "Pick image from gallery",
-                modifr = Modifier.padding(top = 30.dp, start = 16.dp),
-                onClick = { galleryLauncher.launch("image/*") }
+            Text(
+                text = "Capture an image or select one from gallery",
+                style = MaterialTheme.typography.bodyMedium,
             )
+
+
+            Text(
+                text = result, modifier = Modifier.padding(16.dp),
+                fontSize = 20.sp, // Set font size
+                fontWeight = FontWeight.Bold,
+            )
+
+            Row {
+                ClickableImage(
+                    imagePainter = painterResource(id = R.drawable.ic_cam),
+                    contentDescription = "Launch camera",
+                    onClick = { cameraLauncher.launch(null) }
+                )
+                ClickableImage(
+                    imagePainter = painterResource(id = R.drawable.ic_gallery),
+                    contentDescription = "Pick image from gallery",
+                    modifr = Modifier.padding(top = 30.dp, start = 16.dp),
+                    onClick = { galleryLauncher.launch("image/*") }
+                )
+            }
+
+
+            // Gallery button and other UI elements...
+            // Check and request permission
+            LaunchedEffect(key1 = true) {
+                cameraPermissionState.launchPermissionRequest()
+            }
         }
 
 
-        // Gallery button and other UI elements...
-        // Check and request permission
-        LaunchedEffect(key1 = true) {
-            cameraPermissionState.launchPermissionRequest()
-        }
     }
-
-
 }
-
 @Composable
 fun ClickableImage(
     imagePainter: Painter,
@@ -140,31 +146,3 @@ fun ClickableImage(
         modifier = modifr.clickable(onClick = onClick)
     )
 }
-//@Composable
-//fun SimpleDropdownMenu() {
-//    var expanded by remember { mutableStateOf(false) }
-//    var selectedOption by remember { mutableStateOf("Option 1") }
-//
-//    Box(modifier = Modifier.padding(20.dp)) {
-//        Button(onClick = { expanded = true }) {
-//            Text("Selected: $selectedOption")
-//        }
-//
-//        DropdownMenu(
-//            expanded = expanded,
-//            onDismissRequest = { expanded = false }
-//        ) {
-//            val options = listOf("Rice", "Tomato", "Apple")
-//            for (option in options) {
-//                DropdownMenuItem(
-//                    onClick = {
-//                        selectedOption = option
-//                        expanded = false
-//                    }
-//                ) {
-//                    Text(option)
-//                }
-//            }
-//        }
-//    }
-//}

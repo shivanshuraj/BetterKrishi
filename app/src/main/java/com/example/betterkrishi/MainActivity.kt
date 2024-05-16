@@ -10,6 +10,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,7 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -56,7 +63,6 @@ class MainActivity : ComponentActivity() {
             BetterKrishiTheme {
                 MyApp()
             }
-
         }
 
     }
@@ -105,8 +111,8 @@ class MainActivity : ComponentActivity() {
     fun AppNavigator() {
         val navController = rememberNavController()
         val navHost = NavHost(navController = navController, startDestination = "login") {
-            composable(route = "home") {
-                ImagePickerScreen(applicationContext, navController) { bitmap ->
+            composable(Screen.Home.route) {
+                ImagePickerScreen(applicationContext) { bitmap ->
                     processImage(bitmap)
                 }
             }
@@ -118,10 +124,10 @@ class MainActivity : ComponentActivity() {
             composable(route = "otp") {
                 OTPScreen(navController)
             }
-            composable("market") {
+            composable(Screen.Market.route) {
                 MarketScreen(navController)
             }
-            composable("news") {
+            composable(Screen.News.route) {
 
             }
             composable(route = "plant care tips") {
@@ -192,53 +198,38 @@ class MainActivity : ComponentActivity() {
             bitmap
         }
 }
-
-enum class Screen(val route: String, val icon: Int, val title: String) {
-    Home("home", R.drawable.ic_home, "Home"),
-    Market("market", R.drawable.ic_market, "Market"),
-    News("news", R.drawable.ic_news, "News")
+enum class Screen(val route: String) {
+    Home("home"),
+    Market("market"),
+    News("news")
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
-    val items = listOf(Screen.Home, Screen.Market, Screen.News)
-//    BottomNavigation {
-//        val currentRoute = currentRoute(navController)
-//        items.forEach { screen ->
-//            BottomNavigationItem(
-//                icon = { Icon(painterResource(id = screen.icon), contentDescription = null) },
-//                label = { Text(screen.title) },
-//                selected = currentRoute == screen.route,
-//                onClick = {
-//                    navController.navigate(screen.route) {
-//                        navController.graph.startDestinationRoute?.let { route ->
-//                            popUpTo(route) { saveState = true }
-//                        }
-//                        launchSingleTop = true
-//                        restoreState = true
-//                    }
-//                }
-//            )
-//        }
-//    }
+fun BottomNavigationBar(navController: NavHostController) {
+    val items = listOf(
+        Screen.Home,
+        Screen.Market,
+        Screen.News
+    )
+    NavigationBar {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        items.forEach { screen ->
+            NavigationBarItem(
+                icon = { Icon(Icons.Filled.Home, contentDescription = null) }, // Change icons as needed
+                label = { Text(screen.name) },
+                selected = currentRoute == screen.route,
+                onClick = {
+                    navController.navigate(screen.route) {
+                        // Avoid multiple copies of the same destination when reselecting the same item
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
+    }
 }
-
-@Composable
-fun currentRoute(navController: NavController): String? {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    return navBackStackEntry?.destination?.route
-}
-
-//@Composable
-//fun MainScreen() {
-//    val navController = rememberNavController()
-//    Scaffold(
-//        bottomBar = { BottomNavigationBar(navController) }
-//    ) {
-//        NavHost(navController, startDestination = Screen.Home.route) {
-//            composable(Screen.Home.route) { ImagePickerScreen() }
-//            composable(Screen.Market.route) { MarketScreen() }
-//            composable(Screen.News.route) { () }
-//        }
-//    }
-//}
