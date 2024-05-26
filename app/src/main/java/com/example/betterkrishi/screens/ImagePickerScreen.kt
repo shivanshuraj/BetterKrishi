@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.example.betterkrishi.BottomNavigationBar
 import com.example.betterkrishi.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
@@ -81,7 +79,6 @@ fun ImagePickerScreen(context: Context, onImagePicked: (Bitmap) -> String) {
                 Log.d(TAG, "ImagePickerScreen: $result")
             }
         }
-    Scaffold(bottomBar = { BottomNavigationBar(navController = navController) }) {
 
 
         Column(
@@ -132,7 +129,7 @@ fun ImagePickerScreen(context: Context, onImagePicked: (Bitmap) -> String) {
 
 
     }
-}
+
 @Composable
 fun ClickableImage(
     imagePainter: Painter,

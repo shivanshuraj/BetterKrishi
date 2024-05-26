@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -15,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -37,20 +37,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.betterkrishi.R
 import com.example.betterkrishi.ui.theme.Green300
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun LoginScreen(navController: NavHostController) {
     var input_ph_no by remember {
         mutableStateOf("")
     }
     var state by remember {
         mutableStateOf("")
     }
-    var buttonClickedStatus by remember {
+    var buttonClickedStatus by remember{
         mutableIntStateOf(0)
     }
     var otpValue by remember {
@@ -62,7 +62,6 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
             contentDescription = "app logo",
             Modifier.size(48.dp, 48.dp)
         )
-
         if (buttonClickedStatus==0) {
             Text(
                 "Enter your phone number", Modifier.padding(top = 20.dp),
@@ -164,6 +163,7 @@ private fun CharView(
     Text(
         modifier = Modifier
             .width(40.dp)
+            .height(40.dp)
             .border(
                 1.dp, when {
                     isFocused -> Green300
@@ -172,7 +172,7 @@ private fun CharView(
             )
             .padding(2.dp),
         text = char,
-        style = MaterialTheme.typography.bodyMedium,
+        style = TextStyle(fontSize = 20.sp),
         color = if (isFocused) {
             Green300
         } else {

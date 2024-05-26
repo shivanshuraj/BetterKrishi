@@ -9,12 +9,16 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,25 +28,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
 import com.example.betterkrishi.screens.LoginScreen
 import com.example.betterkrishi.screens.MarketScreen
-import com.example.betterkrishi.screens.OTPScreen
-import com.example.betterkrishi.screens.PredictionScreen
-import com.example.betterkrishi.screens.ProductDetails
-import com.example.betterkrishi.screens.sampleProducts
 import com.example.betterkrishi.ui.theme.BetterKrishiTheme
 import kotlinx.coroutines.delay
 import org.tensorflow.lite.DataType
@@ -70,7 +68,11 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun MyApp() {
-        AppNavigator()
+        val navController = rememberNavController()
+        NavHost(navController = navController, startDestination = "login") {
+            composable("login") { LoginScreen(navController) }
+            composable("main") { MainScreen(navController) }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -108,49 +110,64 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun AppNavigator() {
-        val navController = rememberNavController()
-        val navHost = NavHost(navController = navController, startDestination = "login") {
-            composable(Screen.Home.route) {
-                ImagePickerScreen(applicationContext) { bitmap ->
-                    processImage(bitmap)
+    fun MainScreen(navController: NavHostController) {
+        val navItems = listOf(
+            Screen.Home,
+            Screen.News,
+            Screen.Market
+        )
+
+        // Get the current back stack entry to determine the selected state
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        Scaffold(
+            bottomBar = {
+                NavigationBar {
+                    navItems.forEach { screen ->
+                        NavigationBarItem(
+                            icon = { Icon(screen.icon, contentDescription = screen.route) },
+                            label = { Text(screen.route) },
+                            selected = currentRoute == screen.route,
+                            onClick = {
+                                // Avoid multiple copies of the same destination when reselecting the same item
+                                if (currentRoute != screen.route) {
+                                    navController.navigate(screen.route) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
             }
-            composable(route = "sign up") {
-            }
-            composable(route = "login") {
-                LoginScreen(navController = navController)
-            }
-            composable(route = "otp") {
-                OTPScreen(navController)
-            }
-            composable(Screen.Market.route) {
-                MarketScreen(navController)
-            }
-            composable(Screen.News.route) {
-
-            }
-            composable(route = "plant care tips") {
-
-            }
-            composable(route = "prediction/{disease}", arguments = listOf(
-                navArgument(name = "disease") {
-                    type = NavType.StringType
-                }
-            )) {
-                PredictionScreen()
-            }
-            composable(
-                "productDetails/{productId}",
-                arguments = listOf(navArgument("productId") { type = NavType.IntType })
-            ) { backStackEntry ->
-                val productId = backStackEntry.arguments?.getInt("productId")
-                val product = sampleProducts.find { it.id == productId }!!
-                ProductDetails(product = product)
+        ) { innerPadding ->
+            NavHost(
+                navController,
+                startDestination = Screen.Home.route,
+                Modifier.padding(innerPadding)
+            ) {
+                composable(Screen.Home.route) { ImagePickerScreen(applicationContext, ::processImage) }
+                composable(Screen.News.route) {  }
+                composable(Screen.Market.route) { MarketScreen(navController) }
             }
         }
-
     }
+
+
+
+    sealed class Screen(val route: String, val icon: ImageVector) {
+        object Home : Screen("home", Icons.Default.Home)
+        object News : Screen("news", Icons.AutoMirrored.Filled.Article)
+        object Market : Screen("market", Icons.Default.ShoppingCart)
+    }
+
+
+
 
     companion object {
         private const val MODEL_INPUT_SIZE = 256
@@ -198,38 +215,35 @@ class MainActivity : ComponentActivity() {
             bitmap
         }
 }
-enum class Screen(val route: String) {
-    Home("home"),
-    Market("market"),
-    News("news")
-}
 
-@Composable
-fun BottomNavigationBar(navController: NavHostController) {
-    val items = listOf(
-        Screen.Home,
-        Screen.Market,
-        Screen.News
-    )
-    NavigationBar {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-        items.forEach { screen ->
-            NavigationBarItem(
-                icon = { Icon(Icons.Filled.Home, contentDescription = null) }, // Change icons as needed
-                label = { Text(screen.name) },
-                selected = currentRoute == screen.route,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        // Avoid multiple copies of the same destination when reselecting the same item
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-            )
-        }
-    }
-}
+
+//@Composable
+//fun BottomNavigationBar(navController: NavHostController) {
+//    val items = listOf(
+//        Screen.Home,
+//        Screen.Market,
+//        Screen.News
+//    )
+//    NavigationBar {
+//        val navBackStackEntry by navController.currentBackStackEntryAsState()
+//        val currentRoute = navBackStackEntry?.destination?.route
+//        items.forEach { screen ->
+//            NavigationBarItem(
+//                icon = { Icon(Icons.Filled.Home, contentDescription = null) }, // Change icons as needed
+//                label = { Text(screen.name) },
+//                selected = currentRoute == screen.route,
+//                onClick = {
+//                    navController.navigate(screen.route) {
+//                        // Avoid multiple copies of the same destination when reselecting the same item
+//                        popUpTo(navController.graph.findStartDestination().id) {
+//                            saveState = true
+//                        }
+//                        launchSingleTop = true
+//                        restoreState = true
+//                    }
+//                }
+//            )
+//        }
+//    }
+//}
+//
