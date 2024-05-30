@@ -1,65 +1,72 @@
 package com.example.betterkrishi
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Article
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
-import com.example.betterkrishi.screens.LoginScreen
 import com.example.betterkrishi.screens.MarketScreen
+import com.example.betterkrishi.screens.NewsListScreen
+import com.example.betterkrishi.screens.OtpSignInScreen
 import com.example.betterkrishi.ui.theme.BetterKrishiTheme
-import kotlinx.coroutines.delay
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     lateinit var labels: List<String>
+    private val authViewModel: AuthViewModel by viewModels()
+    private val apiKey = "c83c7b4800d9406aa5148724ecd3dc43"  // Replace with your actual API key
+    private val country = "us"
+    lateinit var apiService: NewsApiService
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         labels = application.assets.open("labels.txt").bufferedReader().readLines()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://newsapi.org/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
+        apiService = retrofit.create(NewsApiService::class.java)
+        val repository = NewsRepository(apiService)
+        val viewModelFactory = NewsViewModelFactory(repository)
+        val newsViewModel = ViewModelProvider(this, viewModelFactory).get(NewsViewModel::class.java)
+
+        newsViewModel.fetchTopHeadlines(country, apiKey)
         super.onCreate(savedInstanceState)
         setContent {
             BetterKrishiTheme {
-                MyApp()
+                val context= LocalContext.current
+                MyApp(context)
             }
         }
 
@@ -67,107 +74,70 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun MyApp() {
+    fun MyApp(context: Context) {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = "login") {
-            composable("login") { LoginScreen(navController) }
-            composable("main") { MainScreen(navController) }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Composable
-    fun SplashScreen(navigateToMainScreen: () -> Unit = {}) {
-        var isSplashScreenVisible by remember { mutableStateOf(true) }
-
-        LaunchedEffect(key1 = true) {
-            delay(3000)  // Delay for the splash screen
-            isSplashScreenVisible = false
-        }
-
-        if (isSplashScreenVisible) {
-            // Display the splash screen
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Image(
-                    painter = painterResource(id = R.mipmap.ic_launcher),
-                    contentDescription = "Logo",
-                    Modifier.size(100.dp)
-                )
-            }
-        } else {
-            // Navigate to main screen or main app content
-
+            composable("login") { OtpSignInScreen(navController) }
+            composable("main") { MainScreen(context) }
         }
     }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
-    @Preview(showBackground = true)
     @Composable
-    fun DefaultPreview() {
-        MyApp()
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Composable
-    fun MainScreen(navController: NavHostController) {
-        val navItems = listOf(
-            Screen.Home,
-            Screen.News,
-            Screen.Market
+    fun MyBottomNavigation(navController: NavHostController) {
+        val destinationsList = listOf(
+            Home, News, Market
         )
 
-        // Get the current back stack entry to determine the selected state
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
+        var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
-        Scaffold(
-            bottomBar = {
-                NavigationBar {
-                    navItems.forEach { screen ->
-                        NavigationBarItem(
-                            icon = { Icon(screen.icon, contentDescription = screen.route) },
-                            label = { Text(screen.route) },
-                            selected = currentRoute == screen.route,
-                            onClick = {
-                                // Avoid multiple copies of the same destination when reselecting the same item
-                                if (currentRoute != screen.route) {
-                                    navController.navigate(screen.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
-                            }
+        BottomNavigation {
+            destinationsList.forEachIndexed { index, destination ->
+                BottomNavigationItem(label = { Text(destination.title) },
+                    selected = selectedIndex == index,
+                    onClick = {
+                        selectedIndex = index
+                        navController.navigate(destinationsList[index].route) {
+                            popUpTo(Home.route)
+                            launchSingleTop = true
+                        }
+
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = destination.icon,
+                            contentDescription = destination.title
                         )
-                    }
-                }
+                    })
             }
-        ) { innerPadding ->
-            NavHost(
-                navController,
-                startDestination = Screen.Home.route,
-                Modifier.padding(innerPadding)
-            ) {
-                composable(Screen.Home.route) { ImagePickerScreen(applicationContext, ::processImage) }
-                composable(Screen.News.route) {  }
-                composable(Screen.Market.route) { MarketScreen(navController) }
-            }
+
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun MainScreen(context: Context) {
+        val navController = rememberNavController()
+        Scaffold(bottomBar = { MyBottomNavigation(navController) }) {
+            Box(modifier = Modifier.padding(it)){
+                NavHost(navController = navController, startDestination = "home"){
+                    composable("home"){
+                        ImagePickerScreen(context = context, ::processImage)
+                    }
+                    composable("news"){
+                        NewsListScreen(viewModel = NewsViewModel(NewsRepository(apiService = apiService))){
 
+                        }
+                    }
+                    composable("market"){
+                        MarketScreen(navController = navController)
+                    }
 
-    sealed class Screen(val route: String, val icon: ImageVector) {
-        object Home : Screen("home", Icons.Default.Home)
-        object News : Screen("news", Icons.AutoMirrored.Filled.Article)
-        object Market : Screen("market", Icons.Default.ShoppingCart)
+                }
+            }
+        }
     }
-
-
-
 
     companion object {
         private const val MODEL_INPUT_SIZE = 256
@@ -182,7 +152,8 @@ class MainActivity : ComponentActivity() {
         tensorImage.load(convertHardwareBitmapToSoftware(originalBitmap))
 
         var imageProcessor =
-            ImageProcessor.Builder().add(ResizeOp(256, 256, ResizeOp.ResizeMethod.BILINEAR)).build()
+            ImageProcessor.Builder().add(ResizeOp(256, 256, ResizeOp.ResizeMethod.BILINEAR))
+                .build()
 
         tensorImage = imageProcessor.process(tensorImage)
         val model = RiceDisease.newInstance(this)
@@ -216,34 +187,3 @@ class MainActivity : ComponentActivity() {
         }
 }
 
-
-//@Composable
-//fun BottomNavigationBar(navController: NavHostController) {
-//    val items = listOf(
-//        Screen.Home,
-//        Screen.Market,
-//        Screen.News
-//    )
-//    NavigationBar {
-//        val navBackStackEntry by navController.currentBackStackEntryAsState()
-//        val currentRoute = navBackStackEntry?.destination?.route
-//        items.forEach { screen ->
-//            NavigationBarItem(
-//                icon = { Icon(Icons.Filled.Home, contentDescription = null) }, // Change icons as needed
-//                label = { Text(screen.name) },
-//                selected = currentRoute == screen.route,
-//                onClick = {
-//                    navController.navigate(screen.route) {
-//                        // Avoid multiple copies of the same destination when reselecting the same item
-//                        popUpTo(navController.graph.findStartDestination().id) {
-//                            saveState = true
-//                        }
-//                        launchSingleTop = true
-//                        restoreState = true
-//                    }
-//                }
-//            )
-//        }
-//    }
-//}
-//

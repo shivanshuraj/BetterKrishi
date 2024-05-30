@@ -1,25 +1,23 @@
 package com.example.betterkrishi
 
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class NewsViewModel(private val repository: NewsRepository): ViewModel() {
-    var newsList = mutableStateOf<List<NewsArticle>>(listOf())
-    var isLoading = mutableStateOf(true)
+class NewsViewModel(private val repository: NewsRepository) : ViewModel() {
 
-    init {
-        fetchNews()
-    }
+    val newsList = MutableLiveData<List<NewsArticle>>()
+    val isLoading = MutableLiveData<Boolean>()
 
-    private fun fetchNews() {
+    fun fetchTopHeadlines(country: String, apiKey: String) {
         viewModelScope.launch {
+            isLoading.value = true
             try {
-                isLoading.value = true
-                newsList.value = repository.fetchNews()
+                val articles = repository.fetchTopHeadlines(country, apiKey)
+                newsList.value = articles
             } catch (e: Exception) {
-                // Handle errors
+                // Handle error
             } finally {
                 isLoading.value = false
             }
