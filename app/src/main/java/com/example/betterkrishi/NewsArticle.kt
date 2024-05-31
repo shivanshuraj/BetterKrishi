@@ -1,10 +1,14 @@
 package com.example.betterkrishi
 
-data class NewsArticle(
-    val title: String,
-    val summary: String
+data class NewsResponse(
+    val status: String,
+    val totalResults: Int,
+    val articles: List<Article>
 )
 
-data class NewsResponse(
-    val articles: List<NewsArticle>
+data class Article(
+    val title: String,
+    val description: String?,
+    val url: String,
+    val urlToImage: String?
 )

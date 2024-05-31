@@ -6,23 +6,24 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,7 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.betterkrishi.ml.RiceDisease
 import com.example.betterkrishi.screens.ImagePickerScreen
 import com.example.betterkrishi.screens.MarketScreen
-import com.example.betterkrishi.screens.NewsListScreen
+import com.example.betterkrishi.screens.NewsList
 import com.example.betterkrishi.screens.OtpSignInScreen
 import com.example.betterkrishi.ui.theme.BetterKrishiTheme
 import org.tensorflow.lite.DataType
@@ -38,30 +39,29 @@ import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     lateinit var labels: List<String>
-    private val authViewModel: AuthViewModel by viewModels()
-    private val apiKey = "c83c7b4800d9406aa5148724ecd3dc43"  // Replace with your actual API key
-    private val country = "us"
-    lateinit var apiService: NewsApiService
+//    private val authViewModel: AuthViewModel by viewModels()
+//    private val apiKey = "c83c7b4800d9406aa5148724ecd3dc43"  // Replace with your actual API key
+//    private val country = "us"
+//    lateinit var apiService: NewsApiService
+//    lateinit var newsViewModel: NewsViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         labels = application.assets.open("labels.txt").bufferedReader().readLines()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://newsapi.org/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        apiService = retrofit.create(NewsApiService::class.java)
-        val repository = NewsRepository(apiService)
-        val viewModelFactory = NewsViewModelFactory(repository)
-        val newsViewModel = ViewModelProvider(this, viewModelFactory).get(NewsViewModel::class.java)
-
-        newsViewModel.fetchTopHeadlines(country, apiKey)
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://newsapi.org/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        apiService = retrofit.create(NewsApiService::class.java)
+//        val repository = NewsRepository(apiService)
+//        val viewModelFactory = NewsViewModelFactory(repository)
+//        newsViewModel = ViewModelProvider(this, viewModelFactory).get(NewsViewModel::class.java)
+//
+//        newsViewModel.fetchTopHeadlines(country, apiKey)
         super.onCreate(savedInstanceState)
         setContent {
             BetterKrishiTheme {
@@ -77,8 +77,9 @@ class MainActivity : ComponentActivity() {
     fun MyApp(context: Context) {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = "login") {
-            composable("login") { OtpSignInScreen(navController) }
-            composable("main") { MainScreen(context) }
+            composable("login") { OtpSignInScreen(navController = navController) }
+            composable("main") {
+                MainScreen(context) }
         }
     }
 
@@ -92,7 +93,7 @@ class MainActivity : ComponentActivity() {
 
         var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
-        BottomNavigation {
+        BottomNavigation(backgroundColor = MaterialTheme.colorScheme.primary) {
             destinationsList.forEachIndexed { index, destination ->
                 BottomNavigationItem(label = { Text(destination.title) },
                     selected = selectedIndex == index,
@@ -117,7 +118,8 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun MainScreen(context: Context) {
+    fun MainScreen(context: Context, newsViewModel: NewsViewModel=viewModel()) {
+        val news by newsViewModel.news.observeAsState(emptyList())
         val navController = rememberNavController()
         Scaffold(bottomBar = { MyBottomNavigation(navController) }) {
             Box(modifier = Modifier.padding(it)){
@@ -126,9 +128,7 @@ class MainActivity : ComponentActivity() {
                         ImagePickerScreen(context = context, ::processImage)
                     }
                     composable("news"){
-                        NewsListScreen(viewModel = NewsViewModel(NewsRepository(apiService = apiService))){
-
-                        }
+                        NewsList(news = news)
                     }
                     composable("market"){
                         MarketScreen(navController = navController)

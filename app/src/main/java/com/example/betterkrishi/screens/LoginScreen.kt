@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -34,19 +35,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.example.betterkrishi.AuthViewModel
+import com.example.betterkrishi.MainActivity
 import com.example.betterkrishi.R
 import com.example.betterkrishi.ui.theme.Green300
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
-    var input_ph_no by remember {
+fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+    val context= LocalContext.current
+    var phoneNumber by remember {
         mutableStateOf("")
     }
+    val activity = context as? MainActivity
+
     var state by remember {
         mutableStateOf("")
     }
@@ -83,7 +87,7 @@ fun LoginScreen(navController: NavHostController) {
             )
         } else if(buttonClickedStatus==1) {
             Text(
-                "Enter the OTP sent to $input_ph_no", Modifier.padding(top = 20.dp, bottom = 20.dp),
+                "Enter the OTP sent to $phoneNumber", Modifier.padding(top = 20.dp, bottom = 20.dp),
                 style = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.SemiBold)
             )
             OtpTextField(otpText = otpValue, otpCount = 4) { value, otpInputFilled ->
@@ -94,8 +98,14 @@ fun LoginScreen(navController: NavHostController) {
         Spacer(Modifier.weight(1f))
         Button(
             onClick = {
+                if(buttonClickedStatus==0){
+                    if (activity != null) {
+                    authViewModel.setActivity(activity)
+                }
+                authViewModel.sendOtp(phoneNumber)
+                }
                 buttonClickedStatus++
-                input_ph_no = state
+                phoneNumber = state
 
                 if(buttonClickedStatus==2){
                     navController.navigate("home")
@@ -180,10 +190,4 @@ private fun CharView(
         },
         textAlign = TextAlign.Center
     )
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun loginprev() {
-    LoginScreen(navController = rememberNavController())
 }

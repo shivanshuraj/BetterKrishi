@@ -114,6 +114,6 @@ fun MarketScreen(navController: NavController) {
         modifier = Modifier.padding(start = 16.dp, top = 16.dp)
     )
     ProductGrid(products = sampleProducts) { product ->
-        navController.navigate("productDetails/${product.id}")
+//        navController.navigate("productDetails/${product.id}")
     }
 }

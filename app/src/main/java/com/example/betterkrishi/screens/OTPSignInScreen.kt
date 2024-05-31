@@ -58,7 +58,6 @@ fun OtpSignInScreen(navController: NavController, authViewModel: AuthViewModel =
 //                verificationId?.let { id ->
 //                    authViewModel.verifyOtp(id, otp)
 //                }
-                navController.navigate("main")
             }) {
                 Text("Verify OTP")
             }
